@@ -1,0 +1,5 @@
+train: /content/dataset_yolo/obj_train_data
+val: /content/dataset_yolo/obj_val_data 
+
+nc: 1
+names: ["Platform"]  
