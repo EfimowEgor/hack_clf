@@ -8,6 +8,7 @@ import argparse
 import imageio
 import os
 from collections import Counter
+import pandas as pd
 
 def parse_args():
     parser = argparse.ArgumentParser()
@@ -75,10 +76,10 @@ class YoloViTModule:
 if __name__ == "__main__":
     model = YoloViTModule("./models/weights/checkpoint.pth")
 
-    label2idx = {"Бетон": 0,
-                 "Грунт": 1,
+    label2idx = {"Бетон": 1,
+                 "Грунт": 3,
                  "Дерево": 2,
-                 "Кирпич": 3}
+                 "Кирпич": 4}
 
     args = parse_args()
 
@@ -97,6 +98,8 @@ if __name__ == "__main__":
         print(f"Classification result: {counter[0]}")
     elif args.dir:
         videos = os.listdir(args.dir)
+        file_names = []
+        labels = []
         for video in videos:
             transfromer = Transform(os.path.join(args.dir, video))
             transfromer.framing()
@@ -108,3 +111,10 @@ if __name__ == "__main__":
 
             counter = Counter(predicts).most_common()[0]
             print(f"{video} --- Classification result: {counter[0]}")
+            file_names.append(video)
+            labels.append(label2idx[counter[0]])
+            df = pd.DataFrame({
+                "video_filename":file_names,
+                "class": labels
+            })
+            df.to_csv("submission.csv", index=False, sep=";")
